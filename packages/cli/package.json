@@ -15,7 +15,7 @@
     "figlet": "^1.5.2",
     "clear": "^0.1.0",
     "cli-table3": "^0.6.3",
-    "node-fetch": "^2.6.7"
+    "node-fetch": "^3.3.2"
   },
   "engines": {
     "node": ">=14.0.0"
