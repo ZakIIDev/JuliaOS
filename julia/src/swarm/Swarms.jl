@@ -13,7 +13,7 @@ end
 
 module Swarms
 
-export Swarm, SwarmConfig, SwarmStatus, createSwarm, getSwarm, listSwarms, startSwarm, stopSwarm,
+export Swarm, SwarmConfig, SwarmStatus, create_swarm, getSwarm, listSwarms, startSwarm, stopSwarm,
        getSwarmStatus, addAgentToSwarm, removeAgentFromSwarm, getSharedState, updateSharedState!,
        electLeader, allocateTask, claimTask, completeTask, getSwarmMetrics,
        list_algorithms, Algorithm, SwarmPSO, SwarmGWO, SwarmACO, SwarmGA, SwarmWOA, SwarmDE, SwarmDEPSO,
@@ -306,10 +306,10 @@ end
 # --- Public API Functions ---
 
 """
-    createSwarm(config::SwarmConfig)
+    create_swarm(config::SwarmConfig)
 Create a new swarm with the specified configuration.
 """
-function createSwarm(config::SwarmConfig)
+function create_swarm(config::SwarmConfig)
     swarm_id = "swarm-" * randstring(8) # Generate a random ID
     now_time = now()
 

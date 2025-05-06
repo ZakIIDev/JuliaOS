@@ -459,7 +459,7 @@ function run_simulation(num_agents::Int, env_size::Vector{Float64}, num_steps::I
         Dict("max_iterations" => num_steps)
     )
     
-    swarm_result = Swarms.createSwarm(config)
+    swarm_result = Swarms.create_swarm(config)
     if !swarm_result["success"]
         error("Failed to create swarm: $(swarm_result["error"])")
     end

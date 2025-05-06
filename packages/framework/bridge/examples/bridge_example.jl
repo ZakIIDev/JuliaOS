@@ -100,7 +100,7 @@ else
 end
 
 # 4. Execute a Swarm System Function
-printSection("4. Executing SwarmManager.createSwarm")
+printSection("4. Executing SwarmManager.create_swarm")
 
 # Create parameters for a swarm
 swarm_params = Dict(
@@ -116,7 +116,7 @@ swarm_params = Dict(
 
 # Execute the function
 println("Creating a trading swarm...")
-swarm_response = execute("SwarmManager.createSwarm", swarm_params)
+swarm_response = execute("SwarmManager.create_swarm", swarm_params)
 printStatus("Swarm creation", swarm_response.success)
 
 if swarm_response.success

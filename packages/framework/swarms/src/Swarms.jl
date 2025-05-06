@@ -1,6 +1,6 @@
 module Swarms
 
-export Swarm, SwarmConfig, createSwarm, listSwarms, startSwarm, stopSwarm,
+export Swarm, SwarmConfig, create_swarm, listSwarms, startSwarm, stopSwarm,
        getSwarmStatus, addAgentToSwarm, removeAgentFromSwarm,
        Algorithm, PSO, GWO, ACO, GA, WOA, DE, DEPSO,
        MultiObjective, ParetoFront, WeightedSum, EpsilonConstraint, NSGA2Config
@@ -161,7 +161,7 @@ struct Swarm
 end
 
 """
-    createSwarm(config::SwarmConfig)
+    create_swarm(config::SwarmConfig)
 
 Create a new swarm with the specified configuration.
 
@@ -171,7 +171,7 @@ Create a new swarm with the specified configuration.
 # Returns
 - `Swarm`: The created swarm
 """
-function createSwarm(config::SwarmConfig)
+function create_swarm(config::SwarmConfig)
     # Import JuliaBridge if not already imported
     if !@isdefined(JuliaBridge)
         using ..JuliaBridge
@@ -184,7 +184,7 @@ function createSwarm(config::SwarmConfig)
         catch e
             @error "Failed to connect to JuliaOS backend: $e"
             # Fallback to local implementation if bridge connection fails
-            return _createSwarmLocal(config)
+            return _create_swarm_local(config)
         end
     end
 
@@ -273,12 +273,12 @@ function createSwarm(config::SwarmConfig)
     else
         # If backend call fails, fallback to local implementation
         @warn "Backend swarm creation failed: $(result.error). Using local implementation."
-        return _createSwarmLocal(config)
+        return _create_swarm_local(config)
     end
 end
 
-# Local implementation of createSwarm as a fallback
-function _createSwarmLocal(config::SwarmConfig)
+# Local implementation of create_swarm as a fallback
+function _create_swarm_local(config::SwarmConfig)
     swarm_id = "swarm_" * string(rand(1000:9999))
 
     # Create a local swarm instance

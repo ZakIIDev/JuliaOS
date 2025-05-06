@@ -42,7 +42,7 @@ using JuliaOS
             "minimize",
             Dict("dimensions" => 10, "bounds" => [(-10.0, 10.0) for _ in 1:10])
         )
-        swarm = JuliaOS.Swarms.createSwarm(swarm_config)
+        swarm = JuliaOS.Swarms.create_swarm(swarm_config)
         @test swarm.name == "Test Swarm"
         
         # Test swarm listing

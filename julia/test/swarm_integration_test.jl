@@ -106,7 +106,7 @@ function test_swarm_lifecycle()
     )
 
     # Create the swarm
-    create_result = Swarms.createSwarm(config)
+    create_result = Swarms.create_swarm(config)
     @test create_result["success"] == true
     swarm_id = create_result["id"]
     println("  Created swarm: $swarm_id")

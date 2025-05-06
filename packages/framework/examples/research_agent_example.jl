@@ -61,7 +61,7 @@ swarm_config = JuliaOS.Swarms.SwarmConfig(
         "diversity_factor" => 0.7
     )
 )
-swarm = JuliaOS.Swarms.createSwarm(swarm_config)
+swarm = JuliaOS.Swarms.create_swarm(swarm_config)
 println("Created swarm: $(swarm.name) ($(swarm.id))")
 
 # Add agent to swarm

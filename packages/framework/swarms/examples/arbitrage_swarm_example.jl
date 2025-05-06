@@ -45,7 +45,7 @@ config = SwarmConfig(
 
 # Create the swarm
 println("\nCreating arbitrage swarm...")
-swarm = createSwarm(config)
+swarm = create_swarm(config)
 println("✓ Created swarm: $(swarm.id) ($(swarm.name))")
 println("  Algorithm: $(typeof(swarm.algorithm))")
 println("  Objective: $(swarm.config.objective)")

@@ -189,7 +189,7 @@ function test_swarm_operations()
         Dict("max_iterations" => 100)
     )
 
-    create_result = Swarms.createSwarm(config)
+    create_result = Swarms.create_swarm(config)
     results["create_swarm"] = create_result["success"]
 
     if !create_result["success"]
@@ -313,7 +313,7 @@ function test_fault_tolerance()
         Dict("max_iterations" => 100)
     )
 
-    create_result = Swarms.createSwarm(config)
+    create_result = Swarms.create_swarm(config)
     if !create_result["success"]
         @error "Failed to create swarm: $(create_result["error"])"
         results["create_swarm"] = false

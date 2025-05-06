@@ -233,7 +233,7 @@ function handle_swarm_command(command::String, args::Dict)
             )
             
             # Create swarm
-            return Swarms.createSwarm(config)
+            return Swarms.create_swarm(config)
         elseif command == "list"
             return Swarms.listSwarms(
                 filter_status = get(args, "status", nothing),
