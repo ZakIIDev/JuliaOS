@@ -14,10 +14,10 @@
   },
   "dependencies": {
     "@j3os/julia-bridge": "^0.1.0",
-    "langchain": "^0.0.192",
-    "@langchain/openai": "^0.0.10",
-    "@langchain/community": "^0.0.15",
-    "@langchain/core": "^0.1.12",
+    "langchain": "^0.3.24",
+    "@langchain/openai": "^0.5.10",
+    "@langchain/community": "^0.3.42",
+    "@langchain/core": "^0.3.55",
     "uuid": "^9.0.1",
     "events": "^3.3.0"
   },
