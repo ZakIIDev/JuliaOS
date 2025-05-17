@@ -1,0 +1,106 @@
+components:
+  responses:
+    BadRequest:
+      description: Request validation error or parameter error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Bad Request"
+              message:
+                type: string
+                example: "Invalid parameter: 'limit' must be a positive integer"
+              validation_errors:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    field:
+                      type: string
+                      example: "limit"
+                    message:
+                      type: string
+                      example: "must be a positive integer"
+    
+    NotFound:
+      description: The requested resource does not exist
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Not Found"
+              message:
+                type: string
+                example: "The requested resource was not found"
+              resource_id:
+                type: string
+                example: "agent-123"
+    
+    InternalError:
+      description: An internal server error occurred
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Internal Server Error"
+              message:
+                type: string
+                example: "An unexpected error occurred. Please try again later."
+              error_id:
+                type: string
+                example: "err-abc-123"
+    
+    Unauthorized:
+      description: Unauthorized access
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Unauthorized"
+              message:
+                type: string
+                example: "Authentication required to access this resource"
+    
+    Forbidden:
+      description: Access forbidden
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Forbidden"
+              message:
+                type: string
+                example: "You do not have permission to access this resource"
+    
+    TooManyRequests:
+      description: Request frequency exceeds limit
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Too Many Requests"
+              message:
+                type: string
+                example: "Rate limit exceeded. Please try again later."
+              retry_after:
+                type: integer
+                example: 60
+                description: "Recommended seconds to wait before retrying" 

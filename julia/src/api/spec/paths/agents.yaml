@@ -1,0 +1,1128 @@
+paths:
+  /agents:
+    get:
+      operationId: listAgents
+      summary: Get agent list
+      description: |
+        Lists all agents registered in the system. Results can be filtered using various criteria.
+        
+        Supported filters:
+        - Agent type (TRADING, MONITOR, ARBITRAGE, etc.)
+        - Agent status (CREATED, RUNNING, PAUSED, etc.)
+        - Agent name
+        
+        Results support sorting and pagination.
+      tags:
+        - Agents
+      parameters:
+        - name: type
+          in: query
+          description: |
+            Filter by agent type:
+            * TRADING - Trading agents
+            * MONITOR - Monitoring agents
+            * ARBITRAGE - Arbitrage agents
+            * DATA_COLLECTION - Data collection agents
+            * NOTIFICATION - Notification agents
+            * CUSTOM - Custom agents
+          schema:
+            type: string
+            enum: [TRADING, MONITOR, ARBITRAGE, DATA_COLLECTION, NOTIFICATION, CUSTOM]
+        - name: status
+          in: query
+          description: |
+            Filter by agent status:
+            * CREATED - Created
+            * INITIALIZING - Initializing
+            * RUNNING - Running
+            * PAUSED - Paused
+            * STOPPED - Stopped
+            * ERROR - Error state
+          schema:
+            type: string
+            enum: [CREATED, INITIALIZING, RUNNING, PAUSED, STOPPED, ERROR]
+        - name: name
+          in: query
+          description: Filter by agent name keyword
+          schema:
+            type: string
+        - name: order_by
+          in: query
+          description: Sort field (created_at, name, type, etc.)
+          schema:
+            type: string
+            enum: [created_at, name, type, status]
+        - name: order_direction
+          in: query
+          description: Sort direction
+          schema:
+            type: string
+            enum: [asc, desc]
+        - name: limit
+          in: query
+          description: Number of records per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Pagination offset
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: Successfully returned agent list
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentListResponse'
+        '400':
+          description: Request parameter error
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/InvalidRequestError'
+
+    post:
+      operationId: createAgent
+      summary: Create new agent
+      description: |
+        Creates a new agent and initializes its configuration. After creation, the agent is in CREATED state and must be started using the start endpoint.
+        
+        Main parameters that can be configured:
+        * name - Agent name (required)
+        * type - Agent type (required)
+        * description - Agent description
+        * abilities - List of agent abilities
+        * chains - Supported blockchain networks
+        * llm_config - LLM configuration (for AI agents)
+        * memory_config - Memory configuration
+        * parameters - Custom parameters
+        * max_task_history - Maximum number of task history records
+      tags:
+        - Agents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/agents.yaml#/components/schemas/AgentConfig'
+      responses:
+        '201':
+          description: Agent created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentCreated'
+        '400':
+          description: Request data validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/InvalidRequestError'
+        '409':
+          description: Name conflict
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentConflictError'
+
+  /agents/{agent_id}:
+    parameters:
+      - name: agent_id
+        in: path
+        required: true
+        description: Unique identifier of the agent
+        schema:
+          type: string
+    get:
+      operationId: getAgentStatus
+      summary: Get agent status
+      description: |
+        Get detailed status information for the specified agent, including:
+        * Basic information (ID, name, type, etc.)
+        * Current running status
+        * Recent task execution status
+        * Performance metrics
+        * Configuration information
+        * Last activity time
+        * Error information (if any)
+      tags:
+        - Agents
+      responses:
+        '200':
+          description: Successfully returned agent status
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentStatus'
+        '404':
+          description: Agent not found
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentNotFoundError'
+
+    put:
+      operationId: updateAgent
+      summary: Update agent
+      description: |
+        Update configuration information for an existing agent. Supports the following update operations:
+        * Modify agent name and description
+        * Update agent ability list
+        * Adjust model configuration
+        * Modify custom parameters
+        * Update metadata
+        
+        Note: Some core configurations (such as agent type) cannot be changed after creation.
+      tags:
+        - Agents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/agents.yaml#/components/schemas/AgentUpdate'
+      responses:
+        '200':
+          description: Agent updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentInfo'
+        '400':
+          description: Request data validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/InvalidRequestError'
+        '404':
+          description: Agent not found
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentNotFoundError'
+
+    delete:
+      operationId: deleteAgent
+      summary: Delete agent
+      description: |
+        Delete the specified agent. The deletion process:
+        * Stops all executing tasks
+        * Clears the agent's memory state
+        * Removes the agent's configuration information
+        * Disconnects from groups
+        
+        Note: Deletion is irreversible, please proceed with caution.
+      tags:
+        - Agents
+      responses:
+        '200':
+          description: Agent deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentDeleteResponse'
+        '404':
+          description: Agent not found
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentNotFoundError'
+        '409':
+          description: Conflict, unable to delete (e.g., agent is executing important tasks)
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentStateConflictError'
+
+  /agents/{agent_id}/start:
+    parameters:
+      - name: agent_id
+        in: path
+        required: true
+        description: Unique identifier of the agent
+        schema:
+          type: string
+    post:
+      operationId: startAgent
+      summary: Start agent
+      description: |
+        Start the specified agent. The startup process includes:
+        * Initializing the agent runtime environment
+        * Loading configuration and capabilities
+        * Restoring memory state (if any)
+        * Connecting to necessary external services
+        * Beginning execution of predefined tasks
+      tags:
+        - Agents
+      responses:
+        '200':
+          description: Agent started successfully
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentLifecycleResponse'
+        '404':
+          description: Agent not found
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentNotFoundError'
+        '409':
+          description: State conflict (e.g., agent is already running)
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentStateConflictError'
+
+  /agents/{agent_id}/stop:
+    parameters:
+      - name: agent_id
+        in: path
+        required: true
+        description: Unique identifier of the agent
+        schema:
+          type: string
+    post:
+      operationId: stopAgent
+      summary: Stop agent
+      description: |
+        Stop the specified agent. The stopping process includes:
+        * Safely terminating current executing tasks
+        * Saving current state
+        * Disconnecting from external services
+        * Releasing resources
+        
+        Note: The stop operation preserves the agent's configuration and state, which can be restarted at any time.
+      tags:
+        - Agents
+      responses:
+        '200':
+          description: Agent stopped successfully
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentLifecycleResponse'
+        '404':
+          description: Agent not found
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentNotFoundError'
+        '409':
+          description: State conflict (e.g., agent is already stopped)
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentStateConflictError'
+
+  /agents/{agent_id}/pause:
+    parameters:
+      - name: agent_id
+        in: path
+        required: true
+        description: Unique identifier of the agent
+        schema:
+          type: string
+    post:
+      operationId: pauseAgent
+      summary: Pause agent
+      description: |
+        Pause the agent's execution. In paused state:
+        * Stops accepting new tasks
+        * Maintains existing connections
+        * Preserves memory state
+        * Can be quickly resumed
+        
+        The pause operation is suitable for temporarily interrupting agent activities.
+      tags:
+        - Agents
+      responses:
+        '200':
+          description: Agent paused successfully
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentLifecycleResponse'
+        '404':
+          description: Agent not found
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentNotFoundError'
+        '409':
+          description: State conflict (e.g., agent is not running)
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentStateConflictError'
+
+  /agents/{agent_id}/resume:
+    parameters:
+      - name: agent_id
+        in: path
+        required: true
+        description: Unique identifier of the agent
+        schema:
+          type: string
+    post:
+      operationId: resumeAgent
+      summary: Resume agent
+      description: |
+        Resume a paused agent. The resumption process:
+        * Begins accepting tasks again
+        * Checks and restores previous work state
+        * Continues executing periodic tasks
+        * Reactivates all capabilities
+      tags:
+        - Agents
+      responses:
+        '200':
+          description: Agent resumed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentLifecycleResponse'
+        '404':
+          description: Agent not found
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentNotFoundError'
+        '409':
+          description: State conflict (e.g., agent is not in paused state)
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentStateConflictError'
+
+  /agents/{agent_id}/execute:
+    parameters:
+      - name: agent_id
+        in: path
+        required: true
+        description: Unique identifier of the agent
+        schema:
+          type: string
+    post:
+      operationId: executeAgentTask
+      summary: Execute agent task
+      description: |
+        Have the agent execute a specified task. Supports:
+        * Synchronous execution: wait for task completion and return results
+        * Asynchronous execution: immediately return task ID, results queried via other APIs
+        * Scheduled execution: set task to execute at a specific time
+        * Conditional execution: set trigger conditions
+        
+        Detailed logs and performance metrics are recorded during task execution.
+      tags:
+        - Agents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/agents.yaml#/components/schemas/AgentTaskRequest'
+      responses:
+        '200':
+          description: Task submitted successfully, execution results returned
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentTaskResponse'
+        '202':
+          description: Task accepted and queued, but not yet completed
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/TaskSubmitted'
+        '400':
+          description: Request parameter validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/InvalidRequestError'
+        '404':
+          description: Agent not found
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentNotFoundError'
+        '409':
+          description: Agent cannot execute task (e.g., incorrect state)
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentStateConflictError'
+
+  /agents/{agent_id}/memory:
+    parameters:
+      - name: agent_id
+        in: path
+        required: true
+        description: Unique identifier of the agent
+        schema:
+          type: string
+    get:
+      operationId: getAgentMemory
+      summary: Get agent memory
+      description: |
+        Get the agent's memory state. Memory contains:
+        * Historical interaction records
+        * Learned knowledge
+        * Context information
+        * Temporary data
+        * Cached calculation results
+        
+        Can be used for analyzing agent behavior and debugging issues.
+      tags:
+        - Agents
+      responses:
+        '200':
+          description: Successfully returned agent memory state
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentMemoryResponse'
+        '404':
+          description: Agent not found
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentNotFoundError'
+
+    put:
+      operationId: updateAgentMemory
+      summary: Update agent memory
+      description: |
+        Update the agent's memory state. Supports:
+        * Adding new memory items
+        * Modifying existing memory
+        * Setting memory expiration time
+        * Adjusting memory priority
+        
+        Note: Modifying memory may affect agent behavior, please proceed with caution.
+      tags:
+        - Agents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/agents.yaml#/components/schemas/AgentMemoryRequest'
+      responses:
+        '200':
+          description: Memory updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentMemoryResponse'
+        '400':
+          description: Request parameter validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/InvalidRequestError'
+        '404':
+          description: Agent not found
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentNotFoundError'
+
+    delete:
+      operationId: clearAgentMemory
+      summary: Clear agent memory
+      description: |
+        Clear the agent's memory state. This will:
+        * Delete all historical records
+        * Reset learning state
+        * Empty context information
+        * Delete cached data
+        
+        Suitable for resetting the agent to its initial state.
+      tags:
+        - Agents
+      responses:
+        '200':
+          description: Memory cleared successfully
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentMemoryClearResponse'
+        '404':
+          description: Agent not found
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentNotFoundError'
+
+  /agents/{agent_id}/metrics:
+    parameters:
+      - name: agent_id
+        in: path
+        required: true
+        description: Unique identifier of the agent
+        schema:
+          type: string
+    get:
+      operationId: getAgentMetrics
+      summary: Get agent metrics
+      description: |
+        Get the agent's performance metrics data. Includes:
+        * Task execution statistics (success rate, average duration, etc.)
+        * Resource usage (CPU, memory, network, etc.)
+        * Operation counters (API call count, event processing count, etc.)
+        * Error statistics
+        * Custom metrics
+        
+        Supports specified time range and aggregation methods.
+      tags:
+        - Agents
+      parameters:
+        - name: timeframe
+          in: query
+          description: Metrics time range (e.g., 1h, 24h, 7d, etc.)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully returned agent metrics
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentMetricsResponse'
+        '404':
+          description: Agent not found
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentNotFoundError'
+
+  /agents/{agent_id}/health:
+    parameters:
+      - name: agent_id
+        in: path
+        required: true
+        description: Unique identifier of the agent
+        schema:
+          type: string
+    get:
+      operationId: getAgentHealth
+      summary: Get agent health status
+      description: |
+        Get the agent's health status check results. Check items include:
+        * Core service status
+        * Necessary connection availability
+        * Resource usage level
+        * Error rate monitoring
+        * Performance metrics threshold check
+        * Data consistency verification
+        
+        Used for monitoring the agent's operation status and timely issue discovery.
+      tags:
+        - Agents
+      responses:
+        '200':
+          description: Successfully returned agent health status
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentHealthResponse'
+        '404':
+          description: Agent not found
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentNotFoundError'
+
+  /agents/monitor/start:
+    post:
+      operationId: startAgentMonitor
+      summary: Start agent monitoring system
+      description: |
+        Start system-wide agent monitoring. Monitoring system features:
+        * Collect performance metrics of all agents
+        * Monitor agent health status
+        * Generate system-level statistical data
+        * Trigger alarm (when abnormal detected)
+        * Provide monitoring data storage and query
+        
+        Monitoring system has slight impact on system overall performance.
+      tags:
+        - Agents
+      responses:
+        '200':
+          description: Monitoring system started successfully
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/MonitorResponse'
+        '409':
+          description: Monitoring system is already running
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentStateConflictError'
+
+  /agents/monitor/stop:
+    post:
+      operationId: stopAgentMonitor
+      summary: Stop agent monitoring system
+      description: |
+        Stop system-wide agent monitoring. The stopping operation will:
+        * Terminate all monitoring tasks
+        * Save current monitoring data
+        * Clean up temporary resources
+        * Stop alarm service
+        
+        Can be restarted at any time without losing historical data.
+      tags:
+        - Agents
+      responses:
+        '200':
+          description: Monitoring system stopped successfully
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/MonitorResponse'
+        '409':
+          description: Monitoring system is not running
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentStateConflictError'
+
+  /agents/{agent_id}/swarm/publish:
+    parameters:
+      - name: agent_id
+        in: path
+        required: true
+        description: Unique identifier of the agent
+        schema:
+          type: string
+    post:
+      operationId: publishToSwarm
+      summary: Publish message to swarm
+      description: |
+        Publish message to swarm. Supports:
+        * Publish to specific topic
+        * Broadcast to all subscribers
+        * Set message priority
+        * Message persistence
+        * Message confirmation mechanism
+        
+        Swarm communication is used for agent collaboration and information sharing.
+      tags:
+        - Agents
+        - Swarm
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/agents.yaml#/components/schemas/SwarmPublishRequest'
+      responses:
+        '200':
+          description: Message published successfully
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentSwarmOperationResponse'
+        '400':
+          description: Request parameter validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/InvalidRequestError'
+        '404':
+          description: Agent not found
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentNotFoundError'
+        '409':
+          description: Agent is not connected to swarm
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentStateConflictError'
+
+  /agents/{agent_id}/swarm/subscribe:
+    parameters:
+      - name: agent_id
+        in: path
+        required: true
+        description: Unique identifier of the agent
+        schema:
+          type: string
+    post:
+      operationId: subscribeToSwarmTopic
+      summary: Subscribe swarm topic
+      description: |
+        Subscribe to swarm message topic. Supports:
+        * Subscribe to specific topic
+        * Use wildcard to subscribe to multiple topics
+        * Set message filter
+        * Configure subscription options (QoS, etc.)
+        * Set message processing callback
+        
+        After subscription, the agent will receive all messages of related topics.
+      tags:
+        - Agents
+        - Swarm
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/agents.yaml#/components/schemas/SwarmSubscribeRequest'
+      responses:
+        '200':
+          description: Subscription successful
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentSwarmOperationResponse'
+        '400':
+          description: Request parameter validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/InvalidRequestError'
+        '404':
+          description: Agent not found or topic not subscribed
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentNotFoundError'
+        '409':
+          description: Agent is not connected to swarm
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentStateConflictError'
+
+  /agents/{agent_id}/swarm/unsubscribe:
+    parameters:
+      - name: agent_id
+        in: path
+        required: true
+        description: Unique identifier of the agent
+        schema:
+          type: string
+    post:
+      operationId: unsubscribeFromSwarmTopic
+      summary: Unsubscribe swarm topic
+      description: |
+        Unsubscribe from swarm message topic. Will:
+        * Stop receiving messages of specified topic
+        * Clean up related subscription status
+        * Remove message processing callback
+        * Release related resources
+        
+        Does not affect other topic subscriptions.
+      tags:
+        - Agents
+        - Swarm
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/agents.yaml#/components/schemas/SwarmSubscribeRequest'
+      responses:
+        '200':
+          description: Unsubscribe successful
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentSwarmOperationResponse'
+        '400':
+          description: Request parameter validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/InvalidRequestError'
+        '404':
+          description: Agent not found or topic not subscribed
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentNotFoundError'
+        '409':
+          description: Agent is not connected to swarm
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentStateConflictError'
+
+  /agents/{agent_id}/swarm/connect:
+    parameters:
+      - name: agent_id
+        in: path
+        required: true
+        description: Unique identifier of the agent
+        schema:
+          type: string
+    post:
+      operationId: connectToSwarm
+      summary: Connect to swarm
+      description: |
+        Connect the agent to swarm communication backend. Includes:
+        * Establishing connection with swarm server
+        * Identity verification and authorization
+        * Restoring previous subscription (if any)
+        * Initializing message queue
+        * Setting heartbeat detection
+        
+        After connection establishment, the agent can start swarm communication.
+      tags:
+        - Agents
+        - Swarm
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/agents.yaml#/components/schemas/SwarmConnectRequest'
+      responses:
+        '200':
+          description: Connection successful
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/SwarmConnectResponse'
+        '400':
+          description: Request parameter validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/InvalidRequestError'
+        '404':
+          description: Agent not found
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentNotFoundError'
+        '409':
+          description: Agent is already connected to swarm
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentStateConflictError'
+
+  /agents/{agent_id}/swarm/disconnect:
+    parameters:
+      - name: agent_id
+        in: path
+        required: true
+        description: Unique identifier of the agent
+        schema:
+          type: string
+    post:
+      operationId: disconnectFromSwarm
+      summary: Disconnect swarm connection
+      description: |
+        Disconnect the agent from swarm communication backend. Will:
+        * Cancel all topic subscriptions
+        * Close message queue
+        * Save necessary status
+        * Clean up connection resources
+        * Stop heartbeat detection
+        
+        After disconnection, it can be reconnected at any time.
+      tags:
+        - Agents
+        - Swarm
+      responses:
+        '200':
+          description: Disconnection successful
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/SwarmDisconnectResponse'
+        '404':
+          description: Agent not found
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentNotFoundError'
+        '409':
+          description: Agent is not connected to swarm
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentStateConflictError'
+
+  /agents/{agent_id}/clone:
+    parameters:
+      - name: agent_id
+        in: path
+        required: true
+        description: Clone agent ID
+        schema:
+          type: string
+    post:
+      operationId: cloneAgent
+      summary: Clone agent
+      description: Clone an existing agent and can override some configuration parameters
+      tags:
+        - Agents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/agents.yaml#/components/schemas/AgentCloneRequest'
+      responses:
+        '201':
+          description: Agent cloned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentCreated'
+        '400':
+          description: Request data validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/InvalidRequestError'
+        '404':
+          description: Source agent not found
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentNotFoundError'
+        '409':
+          description: Name conflict
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentConflictError'
+
+  /agents/bulk-delete:
+    post:
+      operationId: bulkDeleteAgents
+      summary: Bulk delete agents
+      description: Bulk delete multiple agents
+      tags:
+        - Agents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/agents.yaml#/components/schemas/AgentBulkDeleteRequest'
+      responses:
+        '200':
+          description: Bulk delete operation completed
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentBulkDeleteResponse'
+        '400':
+          description: Request data validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/InvalidRequestError'
+
+  /agents/{agent_id}/abilities:
+    parameters:
+      - name: agent_id
+        in: path
+        required: true
+        description: Unique identifier of the agent
+        schema:
+          type: string
+    post:
+      operationId: registerAgentAbility
+      summary: Register agent ability
+      description: Register new ability for specified agent
+      tags:
+        - Agents
+        - Abilities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/agents.yaml#/components/schemas/AgentAbilityRequest'
+      responses:
+        '200':
+          description: Ability registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentAbilityResponse'
+        '400':
+          description: Request parameter validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/InvalidRequestError'
+        '404':
+          description: Agent not found
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentNotFoundError'
+        '409':
+          description: Ability name conflict
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentConflictError'
+
+  /agents/{agent_id}/skills:
+    parameters:
+      - name: agent_id
+        in: path
+        required: true
+        description: Unique identifier of the agent
+        schema:
+          type: string
+    post:
+      operationId: registerAgentSkill
+      summary: Register agent skill
+      description: Register new skill for specified agent, optionally set skill execution scheduling
+      tags:
+        - Agents
+        - Skills
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/agents.yaml#/components/schemas/AgentSkillRequest'
+      responses:
+        '200':
+          description: Skill registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentSkillResponse'
+        '400':
+          description: Request parameter validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/InvalidRequestError'
+        '404':
+          description: Agent not found
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentNotFoundError'
+        '409':
+          description: Skill name conflict
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/agents.yaml#/components/schemas/AgentConflictError'

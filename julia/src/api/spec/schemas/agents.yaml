@@ -1,0 +1,1001 @@
+components:
+  schemas:
+    # Agent related schema definitions
+    AgentInfo:
+      type: object
+      required:
+        - id
+        - name
+        - type
+        - status
+        - created_at
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the agent
+          example: "agent-123456"
+        name:
+          type: string
+          description: Agent name
+          example: "Market Data Analysis Agent"
+        type:
+          type: string
+          description: Agent type
+          enum: [TRADING, MONITOR, ARBITRAGE, DATA_COLLECTION, NOTIFICATION, CUSTOM]
+          example: "TRADING"
+        status:
+          type: string
+          description: Current agent status
+          enum: [CREATED, INITIALIZING, RUNNING, PAUSED, STOPPED, ERROR]
+          example: "CREATED"
+        version:
+          type: string
+          description: Agent version number
+          example: "1.0.0"
+        description:
+          type: string
+          description: Agent functionality description
+          example: "Agent that analyzes market data and generates trading signals"
+        created_at:
+          type: string
+          format: date-time
+          description: Agent creation time
+          example: "2023-01-01T12:00:00Z"
+        last_active:
+          type: string
+          format: date-time
+          description: Agent last activity time
+          example: "2023-01-02T15:30:00Z"
+        capabilities:
+          type: array
+          description: List of capabilities supported by the agent
+          items:
+            type: string
+            example: "MARKET_ANALYSIS"
+        metrics:
+          type: object
+          description: Agent performance metrics
+          properties:
+            task_count:
+              type: integer
+              description: Number of completed tasks
+              example: 42
+            success_rate:
+              type: number
+              format: float
+              description: Task success rate
+              minimum: 0
+              maximum: 1
+              example: 0.95
+            avg_response_time:
+              type: number
+              format: float
+              description: Average response time (seconds)
+              example: 1.25
+    
+    AgentConfig:
+      type: object
+      required:
+        - name
+        - type
+      properties:
+        name:
+          type: string
+          description: Agent name
+          example: "Market Data Analysis Agent"
+        type:
+          type: string
+          description: Agent type
+          enum: [TRADING, MONITOR, ARBITRAGE, DATA_COLLECTION, NOTIFICATION, CUSTOM]
+          example: "TRADING"
+        description:
+          type: string
+          description: Agent functionality description
+          example: "Agent that analyzes market data and generates trading signals"
+        abilities:
+          type: array
+          description: List of abilities to enable
+          items:
+            type: string
+            example: "MARKET_ANALYSIS"
+        chains:
+          type: array
+          description: List of supported blockchains
+          items:
+            type: string
+            example: "ethereum"
+        llm_config:
+          type: object
+          description: Model configuration for LLM-based agents
+          properties:
+            provider:
+              type: string
+              description: LLM provider
+              example: "openai"
+            model_name:
+              type: string
+              description: Model name to use
+              example: "gpt-4o-mini"
+            temperature:
+              type: number
+              description: Model temperature parameter
+              minimum: 0
+              maximum: 1
+              example: 0.7
+            max_tokens:
+              type: integer
+              description: Maximum tokens to generate
+              example: 1024
+        memory_config:
+          type: object
+          description: Agent memory configuration
+          properties:
+            max_size:
+              type: integer
+              description: Maximum items in memory
+              example: 1000
+            retention_policy:
+              type: string
+              description: Memory retention policy
+              enum: [lru, fifo, lifo]
+              example: "lru"
+        parameters:
+          type: object
+          description: Agent parameter configuration
+          additionalProperties: true
+          example:
+            analysis_depth: "STANDARD"
+            update_frequency: 300
+            indicator_list: ["MA", "RSI", "MACD"]
+        max_task_history:
+          type: integer
+          description: Maximum number of task history records
+          example: 100
+        metadata:
+          type: object
+          description: User-defined metadata
+          additionalProperties: true
+          example:
+            team: "Trading"
+            purpose: "Market Analysis"
+            priority: "high"
+    
+    AgentCreated:
+      type: object
+      required:
+        - id
+        - name
+        - type
+        - created_at
+      properties:
+        id:
+          type: string
+          description: ID of the newly created agent
+          example: "agent-123456"
+        name:
+          type: string
+          description: Agent name
+          example: "Market Data Analysis Agent"
+        type:
+          type: string
+          description: Agent type
+          enum: [TRADING, MONITOR, ARBITRAGE, DATA_COLLECTION, NOTIFICATION, CUSTOM]
+          example: "TRADING"
+        created_at:
+          type: string
+          format: date-time
+          description: Agent creation time
+          example: "2023-01-01T12:00:00Z"
+        message:
+          type: string
+          description: Success message
+          example: "Agent created successfully"
+    
+    AgentStatus:
+      type: object
+      required:
+        - id
+        - name
+        - type
+        - status
+        - created_at
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the agent
+          example: "agent-123456"
+        name:
+          type: string
+          description: Agent name
+          example: "Market Data Analysis Agent"
+        type:
+          type: string
+          description: Agent type
+          enum: [TRADING, MONITOR, ARBITRAGE, DATA_COLLECTION, NOTIFICATION, CUSTOM]
+          example: "TRADING"
+        status:
+          type: string
+          description: Current agent status
+          enum: [CREATED, INITIALIZING, RUNNING, PAUSED, STOPPED, ERROR]
+          example: "RUNNING"
+        current_task:
+          type: object
+          description: Current executing task (if any)
+          properties:
+            id:
+              type: string
+              description: Task ID
+              example: "task-789012"
+            name:
+              type: string
+              description: Task name
+              example: "Market Data Analysis"
+            progress:
+              type: number
+              description: Task completion percentage
+              minimum: 0
+              maximum: 100
+              example: 75
+            started_at:
+              type: string
+              format: date-time
+              description: Task start time
+              example: "2023-01-02T14:30:00Z"
+        last_error:
+          type: object
+          description: Last error (if any)
+          properties:
+            timestamp:
+              type: string
+              format: date-time
+              description: Error occurrence time
+              example: "2023-01-02T13:45:00Z"
+            message:
+              type: string
+              description: Error message
+              example: "Unable to connect to data source"
+            code:
+              type: string
+              description: Error code
+              example: "CONNECTION_ERROR"
+        created_at:
+          type: string
+          format: date-time
+          description: Agent creation time
+          example: "2023-01-01T12:00:00Z"
+        last_active:
+          type: string
+          format: date-time
+          description: Agent last activity time
+          example: "2023-01-02T15:30:00Z"
+        metrics:
+          type: object
+          description: Agent performance metrics
+          properties:
+            task_count:
+              type: integer
+              description: Number of completed tasks
+              example: 42
+            success_rate:
+              type: number
+              format: float
+              description: Task success rate
+              minimum: 0
+              maximum: 1
+              example: 0.95
+            avg_response_time:
+              type: number
+              format: float
+              description: Average response time (seconds)
+              example: 1.25
+        configuration:
+          type: object
+          description: Current agent configuration
+          properties:
+            abilities:
+              type: array
+              description: List of enabled abilities
+              items:
+                type: string
+                example: "MARKET_ANALYSIS"
+            parameters:
+              type: object
+              description: Agent parameter configuration
+              additionalProperties: true
+              example:
+                analysis_depth: "STANDARD"
+                update_frequency: 300
+            model_config:
+              type: object
+              description: Model configuration (if applicable)
+              properties:
+                model_name:
+                  type: string
+                  example: "gpt-4o-mini"
+                temperature:
+                  type: number
+                  example: 0.7
+    
+    AgentUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          description: New agent name
+          example: "Enhanced Market Analysis Agent"
+        description:
+          type: string
+          description: New functionality description
+          example: "Provides advanced market data analysis and trading signal generation"
+        abilities:
+          type: array
+          description: Updated ability list
+          items:
+            type: string
+            example: "ADVANCED_MARKET_ANALYSIS"
+        model_config:
+          type: object
+          description: Updated model configuration
+          properties:
+            provider:
+              type: string
+              description: LLM provider
+              example: "openai"
+            model_name:
+              type: string
+              description: Model name to use
+              example: "gpt-4o"
+            temperature:
+              type: number
+              description: Model temperature parameter
+              minimum: 0
+              maximum: 1
+              example: 0.8
+            max_tokens:
+              type: integer
+              description: Maximum tokens to generate
+              example: 4096
+        parameters:
+          type: object
+          description: Updated parameter configuration
+          additionalProperties: true
+          example:
+            analysis_depth: "ADVANCED"
+            update_frequency: 180
+            indicator_list: ["MA", "RSI", "MACD", "Bollinger", "Ichimoku"]
+        metadata:
+          type: object
+          description: Updated metadata
+          additionalProperties: true
+          example:
+            team: "Advanced Trading"
+            purpose: "Advanced Market Analysis"
+            priority: "critical"
+    
+    TaskRequest:
+      type: object
+      required:
+        - task_type
+        - input
+      properties:
+        task_type:
+          type: string
+          description: Task type
+          example: "price_analysis"
+        input:
+          type: object
+          description: Task input data
+          additionalProperties: true
+        priority:
+          type: integer
+          description: Task priority (1-10, 10 is highest)
+          minimum: 1
+          maximum: 10
+          default: 5
+        timeout_seconds:
+          type: integer
+          description: Task timeout in seconds
+          minimum: 1
+          default: 300
+        callback_url:
+          type: string
+          description: Callback URL after task completion
+          example: "https://example.com/webhook/task-complete"
+    
+    TaskSubmitted:
+      type: object
+      properties:
+        task_id:
+          type: string
+          description: Task ID
+          example: "task-789012"
+        agent_id:
+          type: string
+          description: Agent ID
+          example: "agent-123456"
+        status:
+          type: string
+          description: Task status
+          example: "PENDING"
+        estimated_completion:
+          type: string
+          format: date-time
+          description: Estimated completion time
+          example: "2023-07-10T15:35:45Z"
+        priority:
+          type: integer
+          description: Task priority
+          example: 5
+        task_type:
+          type: string
+          description: Task type
+          example: "price_analysis"
+    
+    TaskInfo:
+      type: object
+      properties:
+        task_id:
+          type: string
+          description: Task ID
+          example: "task-789012"
+        agent_id:
+          type: string
+          description: Agent ID
+          example: "agent-123456"
+        task_type:
+          type: string
+          description: Task type
+          example: "price_analysis"
+        status:
+          type: string
+          enum: [PENDING, RUNNING, COMPLETED, FAILED, CANCELLED]
+          example: "RUNNING"
+        created_at:
+          type: string
+          format: date-time
+          description: Task creation time
+          example: "2023-07-10T15:30:45Z"
+        started_at:
+          type: string
+          format: date-time
+          description: Task start time
+          example: "2023-07-10T15:31:00Z"
+        completed_at:
+          type: string
+          format: date-time
+          description: Task completion time
+          example: "2023-07-10T15:35:30Z"
+        progress_percent:
+          type: number
+          format: float
+          description: Task progress percentage
+          minimum: 0
+          maximum: 100
+          example: 75
+        error:
+          type: string
+          description: Error message if failed
+          example: "API request timed out"
+        priority:
+          type: integer
+          description: Task priority
+          minimum: 1
+          maximum: 10
+          example: 5
+        timeout_seconds:
+          type: integer
+          description: Task timeout in seconds
+          example: 300
+        input_summary:
+          type: string
+          description: Task input summary
+          example: "Analysis for BTC/USD pair over 24h period" 
+    AgentCloneRequest: # Clone agent request body
+      type: object
+      required:
+        - new_name
+      properties:
+        new_name:
+          type: string
+          description: New name for the cloned agent
+          example: "ClonedAgent1"
+        parameter_overrides:
+          type: object
+          description: Parameters to override, in key-value format
+          additionalProperties: true
+
+    AgentDeleteResponse: # Agent deletion response body
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Agent deleted successfully"
+        agent_id:
+          type: string
+          example: "agent-123"
+
+    AgentBulkDeleteRequest: # Bulk agent deletion request body
+      type: object
+      required:
+        - agent_ids
+      properties:
+        agent_ids:
+          type: array
+          description: List of agent IDs to delete
+          items:
+            type: string
+            example: "agent-123"
+
+    AgentBulkDeleteResponse: # Bulk agent deletion response body
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              agent_id:
+                type: string
+                example: "agent-123"
+              success:
+                type: boolean
+                example: true
+              error:
+                type: string
+                example: "Agent not found"
+        all_successful:
+          type: boolean
+          example: false
+
+    # Agent health status schema
+    AgentHealthStatus:
+      type: object
+      properties:
+        agent_id:
+          type: string
+          description: Agent ID
+          example: "agent-123456"
+        status:
+          type: string
+          description: Health status
+          enum: [HEALTHY, WARNING, CRITICAL, UNKNOWN]
+          example: "HEALTHY" 
+        message:
+          type: string
+          description: Status description
+          example: "Agent running in good condition"
+        timestamp:
+          type: string
+          format: date-time
+          description: Check time
+          example: "2023-10-12T15:31:00Z"
+        details:
+          type: object
+          description: Detailed information
+          additionalProperties: true
+
+    # Agent task schema
+    AgentTaskRequest:
+      type: object
+      required:
+        - ability
+      properties:
+        ability:
+          type: string
+          description: Name of ability to execute
+          example: "ping"
+        mode:
+          type: string
+          description: Execution mode (direct execution or queue)
+          enum: [direct, queue]
+          default: "direct"
+        priority:
+          type: number
+          description: Task priority (only for queue mode)
+          default: 0
+      additionalProperties: true
+
+    AgentTaskResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether task executed successfully
+          example: true
+        queued:
+          type: boolean
+          description: Whether task is queued
+          example: false
+        agent_id:
+          type: string
+          description: Agent ID
+          example: "agent-123456"
+        result:
+          type: object
+          description: Task execution result
+          additionalProperties: true
+          example:
+            msg: "pong"
+            agent_id: "agent-123456"
+            agent_name: "Test Agent"
+
+    # Agent memory operation schema
+    AgentMemoryRequest:
+      type: object
+      required:
+        - key
+        - value
+      properties:
+        key:
+          type: string
+          description: Memory key
+          example: "last_greeting"
+        value:
+          description: Memory value (any type)
+          example: "Hello!"
+
+    AgentMemoryResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether operation was successful
+          example: true
+        agent_id:
+          type: string
+          description: Agent ID
+          example: "agent-123456"
+        memory:
+          type: object
+          description: Memory content
+          additionalProperties: true
+          example:
+            last_greeting: "Hello!"
+            counter: 42
+            
+    AgentMemoryClearResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether operation was successful
+          example: true
+        agent_id:
+          type: string
+          description: Agent ID
+          example: "agent-123456"
+        message:
+          type: string
+          description: Success message
+          example: "Agent memory cleared"
+
+    # Agent metrics response
+    AgentMetricsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether operation was successful
+          example: true
+        data:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              current:
+                type: number
+                example: 42
+              type:
+                type: string
+                example: "GAUGE"
+              history:
+                type: array
+                items:
+                  type: array
+                  items:
+                    oneOf:
+                      - type: string
+                        format: date-time
+                      - type: number
+                example: [["2023-10-12T15:30:00Z", 42], ["2023-10-12T15:31:00Z", 43]]
+              last_updated:
+                type: string
+                format: date-time
+                example: "2023-10-12T15:31:00Z"
+
+    # Agent health check response
+    AgentHealthResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        agent_id:
+          type: string
+          example: "agent-123456"
+        status:
+          type: string
+          enum: [HEALTHY, WARNING, CRITICAL, UNKNOWN]
+          example: "HEALTHY"
+        message:
+          type: string
+          example: "Agent running in good condition"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2023-10-12T15:31:00Z"
+        details:
+          type: object
+          additionalProperties: true
+
+    # Agent monitoring system response
+    MonitorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Agent monitoring system started"
+
+    # Swarm operation schema
+    SwarmPublishRequest:
+      type: object
+      required:
+        - topic
+        - message
+      properties:
+        topic:
+          type: string
+          description: Topic
+          example: "market.update"
+        message:
+          type: object
+          description: Message content
+          additionalProperties: true
+          example:
+            type: "price_update"
+            symbol: "BTC/USD"
+            price: 45000.25
+
+    SwarmSubscribeRequest:
+      type: object
+      required:
+        - topic
+      properties:
+        topic:
+          type: string
+          description: Topic
+          example: "market.update"
+
+    AgentSwarmOperationResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether operation was successful
+          example: true
+        agent_id:
+          type: string
+          description: Agent ID
+          example: "agent-123456"
+        topic:
+          type: string
+          description: Topic
+          example: "market.update"
+          
+    # Agent ability registration request
+    AgentAbilityRequest:
+      type: object
+      required:
+        - name
+        - function
+      properties:
+        name:
+          type: string
+          description: Ability name
+          example: "analyze_market"
+        function:
+          type: string
+          description: Function code representing the ability
+          example: "function(agent, params) { return {result: 'Market analyzed'}; }"
+        description:
+          type: string
+          description: Ability description
+          example: "Analyze market status and generate report"
+          
+    # Agent ability registration response
+    AgentAbilityResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        agent_id:
+          type: string
+          example: "agent-123456"
+        ability_name:
+          type: string
+          example: "analyze_market"
+        message:
+          type: string
+          example: "Ability registered successfully"
+          
+    # Agent skill registration request
+    AgentSkillRequest:
+      type: object
+      required:
+        - name
+        - function
+      properties:
+        name:
+          type: string
+          description: Skill name
+          example: "monitor_prices"
+        function:
+          type: string
+          description: Function code representing the skill
+          example: "function(agent) { return {monitored: true}; }"
+        schedule:
+          type: number
+          description: Skill execution schedule interval (seconds), 0 means execute on demand only
+          example: 60
+        description:
+          type: string
+          description: Skill description
+          example: "Regularly monitor price changes"
+          
+    # Agent skill registration response
+    AgentSkillResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        agent_id:
+          type: string
+          example: "agent-123456"
+        skill_name:
+          type: string
+          example: "monitor_prices"
+        schedule:
+          type: number
+          example: 60
+        message:
+          type: string
+          example: "Skill registered successfully"
+          
+    # Swarm connection request
+    SwarmConnectRequest:
+      type: object
+      properties:
+        backend:
+          type: string
+          description: Swarm backend type
+          enum: [NONE, MEMORY, REDIS, NATS, ZEROMQ]
+          default: "MEMORY"
+        connection_string:
+          type: string
+          description: Connection string
+          example: "redis://localhost:6379"
+          
+    # Swarm connection response
+    SwarmConnectResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        agent_id:
+          type: string
+          example: "agent-123456"
+        backend:
+          type: string
+          example: "MEMORY"
+        message:
+          type: string
+          example: "Agent connected to swarm backend"
+          
+    # Swarm disconnect response
+    SwarmDisconnectResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        agent_id:
+          type: string
+          example: "agent-123456"
+        message:
+          type: string
+          example: "Agent disconnected from swarm backend"
+          
+    # Agent lifecycle response
+    AgentLifecycleResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        agent_id:
+          type: string
+          example: "agent-123456"
+        status:
+          type: string
+          description: New agent status
+          example: "RUNNING"
+        message:
+          type: string
+          description: Operation success message
+          example: "Agent operation successful"
+    
+    # The following are common schemas extracted from paths/agents.yaml
+    # Pagination response structure
+    PaginationInfo:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of records
+          example: 42
+        limit:
+          type: integer
+          description: Records per page
+          example: 20
+        offset:
+          type: integer
+          description: Offset
+          example: 0
+        next_offset:
+          type: integer
+          description: Next page offset (if there is a next page)
+          example: 20
+          
+    # Agent list response
+    AgentListResponse:
+      type: object
+      properties:
+        agents:
+          type: array
+          items:
+            $ref: '#/components/schemas/AgentInfo'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+          
+    # Error response schema
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error message"
+          
+    # Specific error responses
+    InvalidRequestError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Invalid request format"
+          
+    AgentNotFoundError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Agent not found"
+          
+    AgentConflictError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Agent with this name already exists"
+          
+    AgentStateConflictError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Agent is already running"

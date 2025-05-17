@@ -1,50 +1,199 @@
-openapi: 3.1.0
+openapi: 3.0.3
 info:
   title: JuliaOS API
-  description: API for JuliaOS backend server
-  version: 0.1.0
-
+  description: |
+    JuliaOS API provides a complete interface for managing agents, groups, price data, DEX interactions, and trading strategies.
+    
+    This API enables you to:
+    - Create, configure, and manage autonomous agents
+    - Organize agents into collaborative groups
+    - Obtain real-time and historical price data
+    - Interact with decentralized exchanges (DEXs)
+    - Configure and execute trading strategies
+    - Manage blockchain connections and wallets
+  version: 0.2.0
+  license:
+    name: MIT
+    url: https://github.com/Juliaoscode/JuliaOS/blob/main/LICENSE
 servers:
   - url: /api/v1
-  
-paths:
-  /agents:
-    get:
-      operationId: listAgents
-      summary: Get all agents
-      description: Retrieve a list of all agents
-      responses:
-        '200':
-          description: A list of agents
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Agent'
-    post:
-      operationId: createAgent
-      summary: Create a new agent
-      description: Create a new agent with the provided details
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Agent'
-      responses:
-        '201':
-          description: Agent created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Agent'
 
+tags:
+  - name: Agents
+    description: |
+      The agent system is a flexible framework for creating, managing, and deploying autonomous agents. Agents can perform various tasks such as trading, monitoring, data collection, and notifications.
+      
+      Key features:
+      - Agent lifecycle management (create, start, pause, resume, stop, delete)
+      - Agent configuration and customization
+      - Agent monitoring and health checks
+      - Inter-agent communication through group mechanisms
+      - Agent memory management
+      - Extensible agent capabilities and skills
+      - Task execution based on capabilities and skills
+      - Integration with LLMs for AI-driven functionality
+      
+      Agent types:
+      - TRADING: Trading agents
+      - MONITOR: Monitoring agents
+      - ARBITRAGE: Arbitrage agents
+      - DATA_COLLECTION: Data collection agents
+      - NOTIFICATION: Notification agents
+      - CUSTOM: Custom agents
+  - name: Groups
+    description: Creation and management of agent groups
+  - name: Price Data
+    description: Real-time and historical price data
+  - name: DEX
+    description: Interactions with decentralized exchanges
+  - name: Blockchain
+    description: Blockchain network connections and wallet management
+  - name: Trading Strategies
+    description: Configuration, backtesting, and execution of trading strategies
+
+paths:
+  # Agent related paths
+  /agents:
+    $ref: "./paths/agents.yaml#/paths/~1agents"
+  /agents/{agent_id}:
+    $ref: "./paths/agents.yaml#/paths/~1agents~1{agent_id}"
+  /agents/{agent_id}/start:
+    $ref: "./paths/agents.yaml#/paths/~1agents~1{agent_id}~1start"
+  /agents/{agent_id}/stop:
+    $ref: "./paths/agents.yaml#/paths/~1agents~1{agent_id}~1stop"
+  /agents/{agent_id}/pause:
+    $ref: "./paths/agents.yaml#/paths/~1agents~1{agent_id}~1pause"
+  /agents/{agent_id}/resume:
+    $ref: "./paths/agents.yaml#/paths/~1agents~1{agent_id}~1resume"
+  /agents/{agent_id}/execute:
+    $ref: "./paths/agents.yaml#/paths/~1agents~1{agent_id}~1execute"
+  /agents/{agent_id}/memory:
+    $ref: "./paths/agents.yaml#/paths/~1agents~1{agent_id}~1memory"
+  /agents/{agent_id}/metrics:
+    $ref: "./paths/agents.yaml#/paths/~1agents~1{agent_id}~1metrics"
+  /agents/{agent_id}/health:
+    $ref: "./paths/agents.yaml#/paths/~1agents~1{agent_id}~1health"
+  /agents/monitor/start:
+    $ref: "./paths/agents.yaml#/paths/~1agents~1monitor~1start"
+  /agents/monitor/stop:
+    $ref: "./paths/agents.yaml#/paths/~1agents~1monitor~1stop"
+  /agents/{agent_id}/swarm/publish:
+    $ref: "./paths/agents.yaml#/paths/~1agents~1{agent_id}~1swarm~1publish"
+  /agents/{agent_id}/swarm/subscribe:
+    $ref: "./paths/agents.yaml#/paths/~1agents~1{agent_id}~1swarm~1subscribe"
+  /agents/{agent_id}/swarm/unsubscribe:
+    $ref: "./paths/agents.yaml#/paths/~1agents~1{agent_id}~1swarm~1unsubscribe"
+  /agents/{agent_id}/swarm/connect:
+    $ref: "./paths/agents.yaml#/paths/~1agents~1{agent_id}~1swarm~1connect"
+  /agents/{agent_id}/swarm/disconnect:
+    $ref: "./paths/agents.yaml#/paths/~1agents~1{agent_id}~1swarm~1disconnect"
+  /agents/{agent_id}/clone:
+    $ref: "./paths/agents.yaml#/paths/~1agents~1{agent_id}~1clone"
+  /agents/bulk-delete:
+    $ref: "./paths/agents.yaml#/paths/~1agents~1bulk-delete"
+  /agents/{agent_id}/abilities:
+    $ref: "./paths/agents.yaml#/paths/~1agents~1{agent_id}~1abilities"
+  /agents/{agent_id}/skills:
+    $ref: "./paths/agents.yaml#/paths/~1agents~1{agent_id}~1skills"
+  
 components:
+  # 引用 schemas 组件
   schemas:
-    Agent:
-      type: object
-      properties:
-        id:
-          type: string
-          example: "agent123"
+    # Agent related models
+    AgentInfo:
+      $ref: './schemas/agents.yaml#/components/schemas/AgentInfo'
+    AgentConfig:
+      $ref: './schemas/agents.yaml#/components/schemas/AgentConfig'
+    AgentStatus:
+      $ref: './schemas/agents.yaml#/components/schemas/AgentStatus'
+    AgentCreated:
+      $ref: './schemas/agents.yaml#/components/schemas/AgentCreated'
+    AgentUpdate:
+      $ref: './schemas/agents.yaml#/components/schemas/AgentUpdate'
+    TaskRequest:
+      $ref: './schemas/agents.yaml#/components/schemas/TaskRequest'
+    TaskSubmitted:
+      $ref: './schemas/agents.yaml#/components/schemas/TaskSubmitted'
+    TaskInfo:
+      $ref: './schemas/agents.yaml#/components/schemas/TaskInfo'
+    AgentCloneRequest:
+      $ref: './schemas/agents.yaml#/components/schemas/AgentCloneRequest'
+    AgentDeleteResponse:
+      $ref: './schemas/agents.yaml#/components/schemas/AgentDeleteResponse'
+    AgentBulkDeleteRequest:
+      $ref: './schemas/agents.yaml#/components/schemas/AgentBulkDeleteRequest'
+    AgentBulkDeleteResponse:
+      $ref: './schemas/agents.yaml#/components/schemas/AgentBulkDeleteResponse'
+    # Agent memory related
+    AgentMemoryRequest:
+      $ref: './schemas/agents.yaml#/components/schemas/AgentMemoryRequest'
+    AgentMemoryResponse:
+      $ref: './schemas/agents.yaml#/components/schemas/AgentMemoryResponse'
+    AgentMemoryClearResponse:
+      $ref: './schemas/agents.yaml#/components/schemas/AgentMemoryClearResponse'
+    # Agent metrics and health status
+    AgentMetricsResponse:
+      $ref: './schemas/agents.yaml#/components/schemas/AgentMetricsResponse'
+    AgentHealthStatus:
+      $ref: './schemas/agents.yaml#/components/schemas/AgentHealthStatus'
+    AgentHealthResponse:
+      $ref: './schemas/agents.yaml#/components/schemas/AgentHealthResponse'
+    # Agent monitoring
+    MonitorResponse:
+      $ref: './schemas/agents.yaml#/components/schemas/MonitorResponse'
+    # Group communication
+    SwarmPublishRequest:
+      $ref: './schemas/agents.yaml#/components/schemas/SwarmPublishRequest'
+    SwarmSubscribeRequest:
+      $ref: './schemas/agents.yaml#/components/schemas/SwarmSubscribeRequest'
+    AgentSwarmOperationResponse:
+      $ref: './schemas/agents.yaml#/components/schemas/AgentSwarmOperationResponse'
+    SwarmConnectRequest:
+      $ref: './schemas/agents.yaml#/components/schemas/SwarmConnectRequest'
+    SwarmConnectResponse:
+      $ref: './schemas/agents.yaml#/components/schemas/SwarmConnectResponse'
+    SwarmDisconnectResponse:
+      $ref: './schemas/agents.yaml#/components/schemas/SwarmDisconnectResponse'
+    # Agent lifecycle
+    AgentLifecycleResponse:
+      $ref: './schemas/agents.yaml#/components/schemas/AgentLifecycleResponse'
+    # Agent capabilities and skills
+    AgentAbilityRequest:
+      $ref: './schemas/agents.yaml#/components/schemas/AgentAbilityRequest'
+    AgentAbilityResponse:
+      $ref: './schemas/agents.yaml#/components/schemas/AgentAbilityResponse'
+    AgentSkillRequest:
+      $ref: './schemas/agents.yaml#/components/schemas/AgentSkillRequest'
+    AgentSkillResponse:
+      $ref: './schemas/agents.yaml#/components/schemas/AgentSkillResponse'
+  
+  # Reference common responses
+  responses:
+    BadRequest:
+      $ref: "./schemas/responses.yaml#/components/responses/BadRequest"
+    NotFound:
+      $ref: "./schemas/responses.yaml#/components/responses/NotFound"
+    InternalError:
+      $ref: "./schemas/responses.yaml#/components/responses/InternalError"
+    Unauthorized:
+      $ref: "./schemas/responses.yaml#/components/responses/Unauthorized"
+    Forbidden:
+      $ref: "./schemas/responses.yaml#/components/responses/Forbidden"
+    TooManyRequests:
+      $ref: "./schemas/responses.yaml#/components/responses/TooManyRequests"
+  
+  # Security schemes
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+# Global security requirements
+security:
+  - ApiKeyAuth: []
+  - BearerAuth: []
