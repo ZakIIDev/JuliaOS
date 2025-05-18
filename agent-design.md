@@ -23,8 +23,7 @@
    - [Swarm Related Schemas](#swarm-related-schemas)  
    - [Abilities & Skills Related Schemas](#abilities--skills-related-schemas)  
    - [Error Related Schemas](#error-related-schemas)  
-7. [Best Practices](#best-practices)  
-8. [Implementation Considerations](#implementation-considerations)  
+7. [Best Practices](#best-practices)
 
 ## Introduction
 
