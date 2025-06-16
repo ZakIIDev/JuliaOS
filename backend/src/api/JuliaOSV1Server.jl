@@ -15,7 +15,7 @@ function ping(::HTTP.Request)
     return HTTP.Response(200, "")
 end
 
-function create_agent(req::HTTP.Request, create_agent_request::CreateAgentRequest;)::AgentSummary
+function create_agent(req::HTTP.Request, create_agent_request::CreateAgentRequest;)::HTTP.Response
     @info "Triggered endpoint: POST /agents"
 
     id = create_agent_request.id
@@ -39,7 +39,8 @@ function create_agent(req::HTTP.Request, create_agent_request::CreateAgentReques
 
     agent = Agents.create_agent(id, name, description, internal_blueprint)
     @info "Created agent: $(agent.id) with state: $(agent.state)"
-    return AgentSummary(agent.id, agent.name, agent.description, Agents.agent_state_to_string(agent.state), Agents.trigger_type_to_string(agent.trigger.type))
+    agent_summary = AgentSummary(agent.id, agent.name, agent.description, Agents.agent_state_to_string(agent.state), Agents.trigger_type_to_string(agent.trigger.type))
+    return HTTP.Response(201, agent_summary)
 end
 
 function delete_agent(req::HTTP.Request, agent_id::String;)::Nothing

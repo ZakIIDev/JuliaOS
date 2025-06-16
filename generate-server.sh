@@ -4,14 +4,16 @@
 
 JARNAME="openapi-generator-cli.jar"
 
+API_DIR="./backend/src/api"
+
 if [ ! -f "$JARNAME" ]; then
     echo "Missing $JARNAME. Please download it from https://openapi-generator.tech/docs/installation/#jar"
     exit 1
 fi
 
 java -jar $JARNAME generate \
-    -i ./backend/src/api/spec/api-spec.yaml \
+    -i "$API_DIR/spec/api-spec.yaml" \
     -g julia-server \
-    -o ./backend/src/api/server \
+    -o "$API_DIR/server" \
     --additional-properties=packageName=JuliaOSServer \
     --additional-properties=exportModels=true

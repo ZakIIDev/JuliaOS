@@ -176,7 +176,7 @@ class DefaultApi:
         _auth_settings = []  # noqa: E501
 
         _response_types_map = {
-            '200': "AgentSummary",
+            '201': "AgentSummary",
         }
 
         return self.api_client.call_api(

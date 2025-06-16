@@ -52,7 +52,7 @@ paths:
                 - description
                 - blueprint
       responses:
-        '200':
+        '201':
           description: Agent created successfully
           content:
             application/json:
