@@ -43,29 +43,32 @@ function create_agent(req::HTTP.Request, create_agent_request::CreateAgentReques
     return HTTP.Response(201, agent_summary)
 end
 
-function delete_agent(req::HTTP.Request, agent_id::String;)::Nothing
+function delete_agent(req::HTTP.Request, agent_id::String;)::HTTP.Response
     @info "Triggered endpoint: DELETE /agents/$(agent_id)"
     Agents.delete_agent(agent_id)
     @info "Deleted agent $(agent_id)"
-    return nothing
+    return HTTP.Response(204)
 end
 
-function update_agent(req::HTTP.Request, agent_id::String, agent_update::AgentUpdate;)::AgentSummary
+function update_agent(req::HTTP.Request, agent_id::String, agent_update::AgentUpdate;)::HTTP.Response
     @info "Triggered endpoint: PUT /agents/$(agent_id)"
     agent = get(Agents.AGENTS, agent_id) do
         error("Agent $(agent_id) does not exist!")
+        return HTTP.Response(404, "Agent not found")
     end
     new_state = Agents.string_to_agent_state(agent_update.state)
     Agents.set_agent_state(agent, new_state)
-    return AgentSummary(agent.id, agent.name, agent.description, Agents.agent_state_to_string(agent.state), Agents.trigger_type_to_string(agent.trigger.type))
+    agent_summary = AgentSummary(agent.id, agent.name, agent.description, Agents.agent_state_to_string(agent.state), Agents.trigger_type_to_string(agent.trigger.type))
+    return HTTP.Response(200, agent_summary)
 end
 
-function get_agent(req::HTTP.Request, agent_id::String;)::AgentSummary
+function get_agent(req::HTTP.Request, agent_id::String;)::HTTP.Response
     @info "Triggered endpoint: GET /agents/$(agent_id)"
     agent = get(Agents.AGENTS, agent_id) do
         error("Agent $(agent_id) does not exist!")
     end
-    return AgentSummary(agent.id, agent.name, agent.description, Agents.agent_state_to_string(agent.state), Agents.trigger_type_to_string(agent.trigger.type))
+    agent_summary = AgentSummary(agent.id, agent.name, agent.description, Agents.agent_state_to_string(agent.state), Agents.trigger_type_to_string(agent.trigger.type))
+    return HTTP.Response(200, agent_summary)
 end
 
 function list_agents(req::HTTP.Request;)::Vector{AgentSummary}
@@ -77,10 +80,11 @@ function list_agents(req::HTTP.Request;)::Vector{AgentSummary}
     return agents
 end
 
-function process_agent_webhook(req::HTTP.Request, agent_id::String; request_body::Dict{String,Any}=Dict{String,Any}(),)::Nothing
+function process_agent_webhook(req::HTTP.Request, agent_id::String; request_body::Dict{String,Any}=Dict{String,Any}(),)::HTTP.Response
     @info "Triggered endpoint: POST /agents/$(agent_id)/webhook"
     agent = get(Agents.AGENTS, agent_id) do
         error("Agent $(agent_id) does not exist!")
+        return HTTP.Response(404, "Agent not found")
     end
     if agent.trigger.type == Agents.CommonTypes.WEBHOOK_TRIGGER
         @info "Triggering agent $(agent_id) by webhook"
@@ -91,13 +95,14 @@ function process_agent_webhook(req::HTTP.Request, agent_id::String; request_body
             Agents.run(agent)
         end
     end
-    return nothing
+    return HTTP.Response(200)
 end
 
-function get_agent_logs(req::HTTP.Request, agent_id::String;)::Dict{String, Any}
+function get_agent_logs(req::HTTP.Request, agent_id::String;)::Union{HTTP.Response, Dict{String, Any}}
     @info "Triggered endpoint: GET /agents/$(agent_id)/logs"
     agent = get(Agents.AGENTS, agent_id) do
         error("Agent $(agent_id) does not exist!")
+        return HTTP.Response(404, "Agent not found")
     end
     # TODO: implement pagination
     return Dict{String, Any}("logs" => agent.context.logs)
