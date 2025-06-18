@@ -4,6 +4,7 @@ using HTTP
 
 include("server/src/JuliaOSServer.jl")
 include("openapi_server_extensions.jl")
+include("validation.jl")
 
 using .JuliaOSServer
 using ..Agents: Agents, Triggers
@@ -17,6 +18,13 @@ end
 
 function create_agent(req::HTTP.Request, create_agent_request::CreateAgentRequest;)::HTTP.Response
     @info "Triggered endpoint: POST /agents"
+    @validate_model create_agent_request
+
+    #validation = validate_model(create_agent_request)
+    #if validation !== nothing
+    #    @error "Validation failed for CreateAgentRequest: $(validation.body)"
+    #    return validation
+    #end
 
     id = create_agent_request.id
     name = create_agent_request.name
@@ -52,6 +60,8 @@ end
 
 function update_agent(req::HTTP.Request, agent_id::String, agent_update::AgentUpdate;)::HTTP.Response
     @info "Triggered endpoint: PUT /agents/$(agent_id)"
+    @validate_model agent_update
+
     agent = get(Agents.AGENTS, agent_id) do
         error("Agent $(agent_id) does not exist!")
         return HTTP.Response(404, "Agent not found")
