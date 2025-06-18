@@ -16,20 +16,32 @@ Base.@kwdef mutable struct ToolSummary <: OpenAPI.APIModel
     name::Union{Nothing, String} = nothing
     metadata = nothing # spec type: Union{ Nothing, ToolSummaryMetadata }
 
-    function ToolSummary(name, metadata, )
-        OpenAPI.validate_property(ToolSummary, Symbol("name"), name)
-        OpenAPI.validate_property(ToolSummary, Symbol("metadata"), metadata)
-        return new(name, metadata, )
+    function ToolSummary(
+        name::Union{Nothing, String},
+                metadata,
+        )
+        o = new(name, metadata, )
+        OpenAPI.validate_properties(o)
+        return o
     end
 end # type ToolSummary
+
+StructTypes.StructType(::ToolSummary) = StructTypes.Struct()
 
 const _property_types_ToolSummary = Dict{Symbol,String}(Symbol("name")=>"String", Symbol("metadata")=>"ToolSummaryMetadata", )
 OpenAPI.property_type(::Type{ ToolSummary }, name::Symbol) = Union{Nothing,eval(Base.Meta.parse(_property_types_ToolSummary[name]))}
 
-function check_required(o::ToolSummary)
+function OpenAPI.check_required(o::ToolSummary)
     o.name === nothing && (return false)
     true
 end
 
+function OpenAPI.validate_properties(o::ToolSummary)
+    OpenAPI.validate_property(ToolSummary, Symbol("name"), o.name)
+    OpenAPI.validate_property(ToolSummary, Symbol("metadata"), o.metadata)
+end
+
 function OpenAPI.validate_property(::Type{ ToolSummary }, name::Symbol, val)
+
+
 end

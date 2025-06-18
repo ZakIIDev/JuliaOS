@@ -16,21 +16,33 @@ Base.@kwdef mutable struct ToolBlueprint <: OpenAPI.APIModel
     name::Union{Nothing, String} = nothing
     config::Union{Nothing, Dict{String, Any}} = nothing
 
-    function ToolBlueprint(name, config, )
-        OpenAPI.validate_property(ToolBlueprint, Symbol("name"), name)
-        OpenAPI.validate_property(ToolBlueprint, Symbol("config"), config)
-        return new(name, config, )
+    function ToolBlueprint(
+        name::Union{Nothing, String},
+                config::Union{Nothing, Dict{String, Any}},
+        )
+        o = new(name, config, )
+        OpenAPI.validate_properties(o)
+        return o
     end
 end # type ToolBlueprint
+
+StructTypes.StructType(::ToolBlueprint) = StructTypes.Struct()
 
 const _property_types_ToolBlueprint = Dict{Symbol,String}(Symbol("name")=>"String", Symbol("config")=>"Dict{String, Any}", )
 OpenAPI.property_type(::Type{ ToolBlueprint }, name::Symbol) = Union{Nothing,eval(Base.Meta.parse(_property_types_ToolBlueprint[name]))}
 
-function check_required(o::ToolBlueprint)
+function OpenAPI.check_required(o::ToolBlueprint)
     o.name === nothing && (return false)
     o.config === nothing && (return false)
     true
 end
 
+function OpenAPI.validate_properties(o::ToolBlueprint)
+    OpenAPI.validate_property(ToolBlueprint, Symbol("name"), o.name)
+    OpenAPI.validate_property(ToolBlueprint, Symbol("config"), o.config)
+end
+
 function OpenAPI.validate_property(::Type{ ToolBlueprint }, name::Symbol, val)
+
+
 end

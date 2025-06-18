@@ -3,15 +3,24 @@ info:
   title: JuliaOS API
   description: API for JuliaOS backend server
   version: 0.1.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
 
 servers:
   - url: /api/v1
-  
+
+security:
+  - ApiKeyAuth: []
+  - BearerAuth: []
+
 paths:
   /agents:
     get:
       operationId: listAgents
       summary: Get all agents
+      tags:
+        - Agent
       description: Retrieve a list of all agents
       responses:
         '200':
@@ -22,9 +31,13 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/AgentSummary'
+        '400':
+          description: Bad request
     post:
       operationId: createAgent
       summary: Create a new agent
+      tags:
+        - Agent
       description: Create a new agent with the provided details
       requestBody:
         required: true
@@ -48,11 +61,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AgentSummary'
+        '400':
+          description: Bad request
   
   /agents/{agent_id}:
     get:
       operationId: getAgent
       summary: Get a specific agent
+      tags:
+        - Agent
       description: Retrieve the details of a specific agent by ID
       parameters:
         - name: agent_id
@@ -73,6 +90,8 @@ paths:
     put:
       operationId: updateAgent
       summary: Update a specific agent
+      tags:
+        - Agent
       description: Update the details of a specific agent by ID
       parameters:
         - name: agent_id
@@ -99,6 +118,8 @@ paths:
     delete:
       operationId: deleteAgent
       summary: Delete a specific agent
+      tags:
+        - Agent
       description: Delete a specific agent by ID
       parameters:
         - name: agent_id
@@ -117,6 +138,8 @@ paths:
     post:
       operationId: processAgentWebhook
       summary: Trigger event-based agents and provide data to them
+      tags:
+        - Agent
       description: Process a webhook event for a specific agent by ID
       parameters:
         - name: agent_id
@@ -145,6 +168,8 @@ paths:
     get:
       operationId: getAgentLogs
       summary: Get the logs of a specific agent
+      tags:
+        - Agent
       description: Retrieve the logs of a specific agent by ID
       parameters:
         - name: agent_id
@@ -168,6 +193,8 @@ paths:
     get:
       operationId: getAgentOutput
       summary: Get the output of a specific agent
+      tags:
+        - Agent
       description: Retrieve the output of a specific agent by ID
       parameters:
         - name: agent_id
@@ -191,6 +218,8 @@ paths:
     get:
       operationId: listTools
       summary: Get a list of all tools available for use by agents in the system
+      tags:
+        - Tool
       responses:
         '200':
           description: A list of tools
@@ -200,11 +229,15 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ToolSummary'
+        '400':
+          description: Bad request
 
   /strategies:
     get:
       operationId: listStrategies
       summary: Get a list of all strategies available for use by agents in the system
+      tags:
+        - Strategies
       responses:
         '200':
           description: A list of strategies
@@ -214,8 +247,20 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/StrategySummary'
+        '400':
+          description: Bad request
 
 components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      
   schemas:
     AgentSummary:
       type: object

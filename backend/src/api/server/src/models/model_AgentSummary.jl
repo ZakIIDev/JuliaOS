@@ -16,24 +16,37 @@ Base.@kwdef mutable struct AgentSummary <: OpenAPI.APIModel
     id::Union{Nothing, String} = nothing
     state::Union{Nothing, String} = nothing
 
-    function AgentSummary(id, state, )
-        OpenAPI.validate_property(AgentSummary, Symbol("id"), id)
-        OpenAPI.validate_property(AgentSummary, Symbol("state"), state)
-        return new(id, state, )
+    function AgentSummary(
+        id::Union{Nothing, String},
+                state::Union{Nothing, String},
+        )
+        o = new(id, state, )
+        OpenAPI.validate_properties(o)
+        return o
     end
 end # type AgentSummary
+
+StructTypes.StructType(::AgentSummary) = StructTypes.Struct()
 
 const _property_types_AgentSummary = Dict{Symbol,String}(Symbol("id")=>"String", Symbol("state")=>"String", )
 OpenAPI.property_type(::Type{ AgentSummary }, name::Symbol) = Union{Nothing,eval(Base.Meta.parse(_property_types_AgentSummary[name]))}
 
-function check_required(o::AgentSummary)
+function OpenAPI.check_required(o::AgentSummary)
     o.id === nothing && (return false)
     o.state === nothing && (return false)
     true
 end
 
+function OpenAPI.validate_properties(o::AgentSummary)
+    OpenAPI.validate_property(AgentSummary, Symbol("id"), o.id)
+    OpenAPI.validate_property(AgentSummary, Symbol("state"), o.state)
+end
+
 function OpenAPI.validate_property(::Type{ AgentSummary }, name::Symbol, val)
+
+
     if name === Symbol("state")
         OpenAPI.validate_param(name, "AgentSummary", :enum, val, ["CREATED", "RUNNING", "PAUSED", "STOPPED"])
     end
+
 end

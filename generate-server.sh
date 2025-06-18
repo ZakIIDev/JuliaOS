@@ -11,6 +11,7 @@ fi
 
 java -jar $JARNAME generate \
     -i ./backend/src/api/spec/api-spec.yaml \
+    -t ./backend/src/api/spec/templates/ \
     -g julia-server \
     -o ./backend/src/api/server \
     --additional-properties=packageName=JuliaOSServer \

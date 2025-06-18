@@ -13,22 +13,33 @@
 Base.@kwdef mutable struct AgentUpdate <: OpenAPI.APIModel
     state::Union{Nothing, String} = nothing
 
-    function AgentUpdate(state, )
-        OpenAPI.validate_property(AgentUpdate, Symbol("state"), state)
-        return new(state, )
+    function AgentUpdate(
+        state::Union{Nothing, String},
+        )
+        o = new(state, )
+        OpenAPI.validate_properties(o)
+        return o
     end
 end # type AgentUpdate
+
+StructTypes.StructType(::AgentUpdate) = StructTypes.Struct()
 
 const _property_types_AgentUpdate = Dict{Symbol,String}(Symbol("state")=>"String", )
 OpenAPI.property_type(::Type{ AgentUpdate }, name::Symbol) = Union{Nothing,eval(Base.Meta.parse(_property_types_AgentUpdate[name]))}
 
-function check_required(o::AgentUpdate)
+function OpenAPI.check_required(o::AgentUpdate)
     o.state === nothing && (return false)
     true
 end
 
+function OpenAPI.validate_properties(o::AgentUpdate)
+    OpenAPI.validate_property(AgentUpdate, Symbol("state"), o.state)
+end
+
 function OpenAPI.validate_property(::Type{ AgentUpdate }, name::Symbol, val)
+
     if name === Symbol("state")
         OpenAPI.validate_param(name, "AgentUpdate", :enum, val, ["RUNNING", "PAUSED", "STOPPED"])
     end
+
 end

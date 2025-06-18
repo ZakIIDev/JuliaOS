@@ -16,21 +16,33 @@ Base.@kwdef mutable struct CreateAgentRequest <: OpenAPI.APIModel
     id::Union{Nothing, String} = nothing
     blueprint = nothing # spec type: Union{ Nothing, AgentBlueprint }
 
-    function CreateAgentRequest(id, blueprint, )
-        OpenAPI.validate_property(CreateAgentRequest, Symbol("id"), id)
-        OpenAPI.validate_property(CreateAgentRequest, Symbol("blueprint"), blueprint)
-        return new(id, blueprint, )
+    function CreateAgentRequest(
+        id::Union{Nothing, String},
+                blueprint,
+        )
+        o = new(id, blueprint, )
+        OpenAPI.validate_properties(o)
+        return o
     end
 end # type CreateAgentRequest
+
+StructTypes.StructType(::CreateAgentRequest) = StructTypes.Struct()
 
 const _property_types_CreateAgentRequest = Dict{Symbol,String}(Symbol("id")=>"String", Symbol("blueprint")=>"AgentBlueprint", )
 OpenAPI.property_type(::Type{ CreateAgentRequest }, name::Symbol) = Union{Nothing,eval(Base.Meta.parse(_property_types_CreateAgentRequest[name]))}
 
-function check_required(o::CreateAgentRequest)
+function OpenAPI.check_required(o::CreateAgentRequest)
     o.id === nothing && (return false)
     o.blueprint === nothing && (return false)
     true
 end
 
+function OpenAPI.validate_properties(o::CreateAgentRequest)
+    OpenAPI.validate_property(CreateAgentRequest, Symbol("id"), o.id)
+    OpenAPI.validate_property(CreateAgentRequest, Symbol("blueprint"), o.blueprint)
+end
+
 function OpenAPI.validate_property(::Type{ CreateAgentRequest }, name::Symbol, val)
+
+
 end

@@ -1,0 +1,16 @@
+{
+  "name": "juliaos-web-cli",
+  "version": "0.1.0",
+  "description": "JuliaOS Framework Web - Web interface for JuliaOS framework",
+  "scripts": {
+    "server": "julia --threads 4,1 --project=. run_server.jl",
+    "server2": "julia --threads 4,1 --project=. src/api/JuliaOSV1Server.jl",
+    "test:all": "julia --project=. test/runtests.jl",
+    "test:file": "julia --project=. -e \"include(ARGS[1])\"",
+    "deps:install": "julia --project=. -e \"using Pkg; Pkg.instantiate()\"",
+    "deps:update": "julia --project=. -e \"using Pkg; Pkg.update()\"",
+    "deps:add": "julia --project=. -e \"using Pkg; Pkg.add(ARGS[1])\""
+  },
+  "author": "JuliaOS Team",
+  "license": "MIT"
+} 

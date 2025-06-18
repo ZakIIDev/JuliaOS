@@ -13,19 +13,29 @@
 Base.@kwdef mutable struct StrategySummary <: OpenAPI.APIModel
     name::Union{Nothing, String} = nothing
 
-    function StrategySummary(name, )
-        OpenAPI.validate_property(StrategySummary, Symbol("name"), name)
-        return new(name, )
+    function StrategySummary(
+        name::Union{Nothing, String},
+        )
+        o = new(name, )
+        OpenAPI.validate_properties(o)
+        return o
     end
 end # type StrategySummary
+
+StructTypes.StructType(::StrategySummary) = StructTypes.Struct()
 
 const _property_types_StrategySummary = Dict{Symbol,String}(Symbol("name")=>"String", )
 OpenAPI.property_type(::Type{ StrategySummary }, name::Symbol) = Union{Nothing,eval(Base.Meta.parse(_property_types_StrategySummary[name]))}
 
-function check_required(o::StrategySummary)
+function OpenAPI.check_required(o::StrategySummary)
     o.name === nothing && (return false)
     true
 end
 
+function OpenAPI.validate_properties(o::StrategySummary)
+    OpenAPI.validate_property(StrategySummary, Symbol("name"), o.name)
+end
+
 function OpenAPI.validate_property(::Type{ StrategySummary }, name::Symbol, val)
+
 end

@@ -19,23 +19,37 @@ Base.@kwdef mutable struct AgentBlueprint <: OpenAPI.APIModel
     strategy = nothing # spec type: Union{ Nothing, StrategyBlueprint }
     trigger = nothing # spec type: Union{ Nothing, TriggerConfig }
 
-    function AgentBlueprint(tools, strategy, trigger, )
-        OpenAPI.validate_property(AgentBlueprint, Symbol("tools"), tools)
-        OpenAPI.validate_property(AgentBlueprint, Symbol("strategy"), strategy)
-        OpenAPI.validate_property(AgentBlueprint, Symbol("trigger"), trigger)
-        return new(tools, strategy, trigger, )
+    function AgentBlueprint(
+        tools::Union{Nothing, Vector},
+                strategy,
+                trigger,
+        )
+        o = new(tools, strategy, trigger, )
+        OpenAPI.validate_properties(o)
+        return o
     end
 end # type AgentBlueprint
+
+StructTypes.StructType(::AgentBlueprint) = StructTypes.Struct()
 
 const _property_types_AgentBlueprint = Dict{Symbol,String}(Symbol("tools")=>"Vector{ToolBlueprint}", Symbol("strategy")=>"StrategyBlueprint", Symbol("trigger")=>"TriggerConfig", )
 OpenAPI.property_type(::Type{ AgentBlueprint }, name::Symbol) = Union{Nothing,eval(Base.Meta.parse(_property_types_AgentBlueprint[name]))}
 
-function check_required(o::AgentBlueprint)
+function OpenAPI.check_required(o::AgentBlueprint)
     o.tools === nothing && (return false)
     o.strategy === nothing && (return false)
     o.trigger === nothing && (return false)
     true
 end
 
+function OpenAPI.validate_properties(o::AgentBlueprint)
+    OpenAPI.validate_property(AgentBlueprint, Symbol("tools"), o.tools)
+    OpenAPI.validate_property(AgentBlueprint, Symbol("strategy"), o.strategy)
+    OpenAPI.validate_property(AgentBlueprint, Symbol("trigger"), o.trigger)
+end
+
 function OpenAPI.validate_property(::Type{ AgentBlueprint }, name::Symbol, val)
+
+
+
 end

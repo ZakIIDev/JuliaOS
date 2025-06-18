@@ -16,21 +16,33 @@ Base.@kwdef mutable struct StrategyBlueprint <: OpenAPI.APIModel
     name::Union{Nothing, String} = nothing
     config::Union{Nothing, Dict{String, Any}} = nothing
 
-    function StrategyBlueprint(name, config, )
-        OpenAPI.validate_property(StrategyBlueprint, Symbol("name"), name)
-        OpenAPI.validate_property(StrategyBlueprint, Symbol("config"), config)
-        return new(name, config, )
+    function StrategyBlueprint(
+        name::Union{Nothing, String},
+                config::Union{Nothing, Dict{String, Any}},
+        )
+        o = new(name, config, )
+        OpenAPI.validate_properties(o)
+        return o
     end
 end # type StrategyBlueprint
+
+StructTypes.StructType(::StrategyBlueprint) = StructTypes.Struct()
 
 const _property_types_StrategyBlueprint = Dict{Symbol,String}(Symbol("name")=>"String", Symbol("config")=>"Dict{String, Any}", )
 OpenAPI.property_type(::Type{ StrategyBlueprint }, name::Symbol) = Union{Nothing,eval(Base.Meta.parse(_property_types_StrategyBlueprint[name]))}
 
-function check_required(o::StrategyBlueprint)
+function OpenAPI.check_required(o::StrategyBlueprint)
     o.name === nothing && (return false)
     o.config === nothing && (return false)
     true
 end
 
+function OpenAPI.validate_properties(o::StrategyBlueprint)
+    OpenAPI.validate_property(StrategyBlueprint, Symbol("name"), o.name)
+    OpenAPI.validate_property(StrategyBlueprint, Symbol("config"), o.config)
+end
+
 function OpenAPI.validate_property(::Type{ StrategyBlueprint }, name::Symbol, val)
+
+
 end

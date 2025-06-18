@@ -16,24 +16,37 @@ Base.@kwdef mutable struct TriggerConfig <: OpenAPI.APIModel
     type::Union{Nothing, String} = nothing
     params::Union{Nothing, Dict{String, Any}} = nothing
 
-    function TriggerConfig(type, params, )
-        OpenAPI.validate_property(TriggerConfig, Symbol("type"), type)
-        OpenAPI.validate_property(TriggerConfig, Symbol("params"), params)
-        return new(type, params, )
+    function TriggerConfig(
+        type::Union{Nothing, String},
+                params::Union{Nothing, Dict{String, Any}},
+        )
+        o = new(type, params, )
+        OpenAPI.validate_properties(o)
+        return o
     end
 end # type TriggerConfig
+
+StructTypes.StructType(::TriggerConfig) = StructTypes.Struct()
 
 const _property_types_TriggerConfig = Dict{Symbol,String}(Symbol("type")=>"String", Symbol("params")=>"Dict{String, Any}", )
 OpenAPI.property_type(::Type{ TriggerConfig }, name::Symbol) = Union{Nothing,eval(Base.Meta.parse(_property_types_TriggerConfig[name]))}
 
-function check_required(o::TriggerConfig)
+function OpenAPI.check_required(o::TriggerConfig)
     o.type === nothing && (return false)
     o.params === nothing && (return false)
     true
 end
 
+function OpenAPI.validate_properties(o::TriggerConfig)
+    OpenAPI.validate_property(TriggerConfig, Symbol("type"), o.type)
+    OpenAPI.validate_property(TriggerConfig, Symbol("params"), o.params)
+end
+
 function OpenAPI.validate_property(::Type{ TriggerConfig }, name::Symbol, val)
+
     if name === Symbol("type")
         OpenAPI.validate_param(name, "TriggerConfig", :enum, val, ["webhook"])
     end
+
+
 end
