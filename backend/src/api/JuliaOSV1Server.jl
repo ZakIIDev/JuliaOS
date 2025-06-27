@@ -20,12 +20,6 @@ function create_agent(req::HTTP.Request, create_agent_request::CreateAgentReques
     @info "Triggered endpoint: POST /agents"
     @validate_model create_agent_request
 
-    #validation = validate_model(create_agent_request)
-    #if validation !== nothing
-    #    @error "Validation failed for CreateAgentRequest: $(validation.body)"
-    #    return validation
-    #end
-
     id = create_agent_request.id
     name = create_agent_request.name
     description = create_agent_request.description
