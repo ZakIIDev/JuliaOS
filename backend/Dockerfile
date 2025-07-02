@@ -5,6 +5,13 @@ COPY Project.toml ./
 COPY src/ ./src/
 COPY .env ./
 
+RUN apt-get update && \
+    apt-get install -y python3 python3-pip && \
+    pip3 install --upgrade pip && \
+    pip3 install tweepy
+
+ENV PYTHON=/usr/bin/python3
+
 RUN julia -e "\
 import Pkg; \
 Pkg.Registry.add(\"General\"); \
