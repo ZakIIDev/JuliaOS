@@ -16,6 +16,7 @@ using ..SwarmBase
 include("algorithms/de.jl")
 include("algorithms/ga.jl")
 include("algorithms/pso.jl")
+include("algorithms/enhanced_pso.jl")
 
 using .PSOAlgorithmImpl: PSOAlgorithm
 using .DEAlgorithmImpl: DEAlgorithm
